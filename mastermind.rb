@@ -2,7 +2,8 @@ class Board
 	def initialize(puzzle)
 		@puzzle=puzzle
 		@quessinstances = []
-		@victory = false	
+		@victory = false
+		@counter = 1	
 	end
 
   def oneround(instanssi)
@@ -16,13 +17,45 @@ class Board
   		end 		
     end 
     puts quesses.shuffle! 
-    checkVictory(instanssi)  
+    checkVictory(instanssi, 1)  
   end
 
-  def checkVictory(instanssi)
-  	if instanssi == @puzzle
+  def oneroundcomp(instanssi)
+  	quesses = []
+  
+  	puts "Computer has quessed: #{instanssi} It matches as follows: (2=correct color, correct place, 1=correct color,wrong place"
+  	
+  	for i in 0...instanssi.length
+  		if instanssi[i] == @puzzle[i]
+  			puts("2")
+  		 quesses.push(instanssi[i])
+  		  		  
+  		 elsif @puzzle.include?(instanssi[i]) then quesses.push($colors[rand(6)]) 
+  		 	puts ("1")
+  		else quesses.push($colors[rand(6)])
+  		puts ("0")  		  		 	
+  		end 		
+    end    
+    
+    checkVictory(instanssi, 2)    
+    sleep 1 
+    @counter +=1   
+    unless @counter >= 12 
+    	oneroundcomp(quesses)
+
+    end
+  end
+
+
+
+  def checkVictory(instanssi, rooli)
+  	if instanssi == @puzzle 
   		@victory = true
+  			if rooli == 1
   		puts "You have cracked the code! The correct code was #{instanssi}"
+  	elsif rooli == 2
+  		puts "Computer has cracked the code! The correct code was #{instanssi}"
+  	end
   		exit
     end
   end
@@ -38,8 +71,9 @@ class Puzzle
     p @puzzle
    
       elsif role == "2"
+      	@puzzle = []
     for i in 1..4
-    @puzzle = []	
+    	
 	puts "Select color number #{i} from among #{$colors}"	
 	color = gets.chomp			
 	@puzzle.push(color)	
@@ -51,7 +85,7 @@ end
 
 def randomizepuzzle(puzzle)
   $colors = ["red", "green", "blue", "orange", "purple", "teal"]  
-  4.times do puzzle.push($colors[rand(5)])
+  4.times do puzzle.push($colors[rand(6)])
     end  
   end
 end
@@ -76,7 +110,7 @@ class InstanceOfPuzzle
     
 elsif role == "2"
     @quessinstance = []
-      4.times do @quessinstance.push($colors[rand(5)])
+      4.times do @quessinstance.push($colors[rand(6)])
       end
 end
 end
@@ -111,10 +145,11 @@ role = gets.chomp
  end
 
 puts "Computer will now quess your puzzle"  
-  12.times do 
+  #12.times do
   toka = InstanceOfPuzzle.new(role)
-  newGame.oneround(toka.quessinstance)
-end
+  newGame.oneroundcomp(toka.quessinstance)
+#end
+
 
 #tarkistus
 
